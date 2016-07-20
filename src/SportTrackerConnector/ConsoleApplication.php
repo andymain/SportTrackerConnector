@@ -8,6 +8,7 @@ use SportTrackerConnector\Command\Upload;
 use SportTrackerConnector\Command\UploadSync;
 use SportTrackerConnector\Tracker\Strava\Command\GetToken;
 use Symfony\Component\Console\Application;
+use SportTrackerConnector\Command\PolarAPITest;
 
 /**
  * The console application.
@@ -29,5 +30,7 @@ class ConsoleApplication extends Application
 
         // Tracker specific commands.
         $this->add(new GetToken());
+
+        $this->add(new PolarAPITest());
     }
 }

@@ -21,6 +21,9 @@ class API
 
     const POLAR_FLOW_URL_WORKOUT = 'https://flow.polar.com/training/analysis/%s/export/%s/false';
 
+    const POLAR_FLOW_URL_ACTIVITY =  'https://flow.polar.com/activity/data/%s/%s';
+
+
     /**
      * Username for polar.
      *
@@ -34,13 +37,7 @@ class API
      * @var string
      */
     protected $password;
-
-    /**
-     * The sport mapper.
-     *
-     * @var \SportTrackerConnector\Core\Workout\SportMapperInterface
-     */
-    protected $sportMapper;
+    
 
     /**
      * The HTTP client.
@@ -57,12 +54,12 @@ class API
      * @param string $password Password for polar website.
      * @param SportMapperInterface $sportMapper The sport mapper.
      */
-    public function __construct(Client $client, $username, $password, SportMapperInterface $sportMapper)
+    public function __construct(Client $client, $username, $password)
     {
         $this->httpClient = $client;
         $this->username = $username;
         $this->password = $password;
-        $this->sportMapper = $sportMapper;
+   
 
         $this->loginIntoPolar();
     }
@@ -103,6 +100,24 @@ class API
             throw new \Exception('Unexpected "' . $response->getStatusCode() . '"response code from Endomondo.');
         } catch (\Exception $e) {
             throw new RuntimeException('Could not list events.', null, $e);
+        }
+    }
+
+
+    public function listActivitySummary(DateTime $startDate, DateTime $endDate)
+    {
+        $url = sprintf(self::POLAR_FLOW_URL_ACTIVITY, $startDate->format('d.m.Y'), $endDate->format('d.m.Y'));
+
+        try {
+            $response = $this->httpClient->get($url, ['cookies' => true]);
+
+            if ($response->getStatusCode() === 200) {
+                return $response->json();
+            }
+
+            throw new \Exception('Unexpected "' . $response->getStatusCode() . '"response code from Endomondo.');
+        } catch (\Exception $e) {
+            throw new RuntimeException('Could not list activity.', null, $e);
         }
     }
 
